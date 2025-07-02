@@ -1,7 +1,8 @@
 import Vapor
 import Fluent
+import NIOCore
 
-final class MedicationNotificationService {
+final class MedicationNotificationService: @unchecked Sendable {
     private var timer: RepeatedTask?
     private let app: Application
     

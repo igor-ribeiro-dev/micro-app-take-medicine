@@ -26,7 +26,7 @@ public func configure(_ app: Application) async throws {
     try routes(app)
 }
 
-final class NotificationServiceLifecycleHandler: LifecycleHandler {
+final class NotificationServiceLifecycleHandler: LifecycleHandler, @unchecked Sendable {
     let service: MedicationNotificationService
     init(service: MedicationNotificationService) {
         self.service = service
