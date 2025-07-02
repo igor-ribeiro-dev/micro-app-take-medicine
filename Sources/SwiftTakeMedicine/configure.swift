@@ -17,6 +17,21 @@ public func configure(_ app: Application) async throws {
 
     app.views.use(.leaf)
 
+    // Inicia o serviço de notificação de medicamentos
+    let notificationService = MedicationNotificationService(app: app)
+    notificationService.start()
+    app.lifecycle.use(NotificationServiceLifecycleHandler(service: notificationService))
+
     // register routes
     try routes(app)
+}
+
+final class NotificationServiceLifecycleHandler: LifecycleHandler {
+    let service: MedicationNotificationService
+    init(service: MedicationNotificationService) {
+        self.service = service
+    }
+    func shutdown(_ application: Application) {
+        service.shutdown()
+    }
 }
