@@ -40,6 +40,21 @@ VITE_SERVICE_TYPE=backend
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
+## 🌍 Funcionalidade de Ambiente
+
+O sistema detecta automaticamente o ambiente e se comporta diferentemente:
+
+### 🏭 Produção
+- Usa `VITE_API_BASE_URL` ou `window.location.origin` (mesmo domínio)
+- URL do backend é fixa e não pode ser alterada via interface
+- Otimizado para performance e segurança
+
+### 🛠️ Desenvolvimento  
+- Permite configurar URL do backend via interface
+- URL customizada é salva no localStorage
+- Botão para resetar URL para o padrão
+- Verificação de conectividade em tempo real
+
 ## 🚫 Comportamento de Falhas
 
 - **Memory Service**: Sempre funciona (dados na memória)
@@ -121,6 +136,14 @@ O header mostra o status atual do serviço:
 - **🟢 Backend API**: Backend conectado e funcionando
 - **🔴 Backend API**: Backend configurado mas desconectado
 - **🔵 Memory Service**: Usando serviço in-memory
+
+### 📊 Painel de Configurações
+
+O painel de configurações mostra informações detalhadas:
+- **Ambiente**: Produção ou Desenvolvimento
+- **Status da conexão**: Conectado/Desconectado
+- **URL do backend**: URL atual configurada
+- **Configuração de URL**: Em desenvolvimento, permite alterar a URL do backend
 
 ## 🧪 Testando os Serviços
 

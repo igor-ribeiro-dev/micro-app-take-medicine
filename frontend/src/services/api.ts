@@ -2,9 +2,26 @@ import { Medication, NotificationConfig } from '../types/medication';
 import { memoryService } from './memoryService';
 import { BackendService } from './backendService';
 
+// Environment detection
+const isProduction = import.meta.env.PROD;
+const isDevelopment = import.meta.env.DEV;
+
 // Environment configuration
 const SERVICE_TYPE = import.meta.env.VITE_SERVICE_TYPE || 'memory'; // 'memory' | 'backend'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+// URL configuration based on environment
+function getApiBaseUrl(): string {
+  if (isProduction) {
+    // In production, use the VITE_API_BASE_URL or default to current origin
+    return import.meta.env.VITE_API_BASE_URL || window.location.origin;
+  } else {
+    // In development, allow custom backend URL or use default
+    const customBackendUrl = localStorage.getItem('dev_backend_url');
+    return customBackendUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+  }
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Service interface for consistent API
 interface ServiceInterface {
@@ -22,12 +39,14 @@ class ApiService implements ServiceInterface {
   private backendService?: BackendService;
   private serviceType: string;
   private backendConnected: boolean = false;
+  private currentApiUrl: string;
 
   constructor() {
     this.serviceType = SERVICE_TYPE;
+    this.currentApiUrl = API_BASE_URL;
     
     if (this.serviceType === 'backend') {
-      this.backendService = new BackendService(API_BASE_URL);
+      this.backendService = new BackendService(this.currentApiUrl);
       this.service = this.backendService;
       // Check connectivity on initialization
       this.checkBackendHealth();
@@ -36,8 +55,9 @@ class ApiService implements ServiceInterface {
     }
 
     console.log(`🔧 API Service initialized with: ${this.serviceType.toUpperCase()}`);
+    console.log(`🌍 Environment: ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'}`);
     if (this.serviceType === 'backend') {
-      console.log(`🌐 Backend URL: ${API_BASE_URL}`);
+      console.log(`🌐 Backend URL: ${this.currentApiUrl}`);
     }
   }
 
@@ -51,6 +71,60 @@ class ApiService implements ServiceInterface {
         console.log('🏥 Backend health check: ❌ Failed');
       }
     }
+  }
+
+  // Method to update backend URL (for development)
+  async updateBackendUrl(newUrl: string): Promise<boolean> {
+    if (!isDevelopment) {
+      console.warn('Backend URL can only be changed in development mode');
+      return false;
+    }
+
+    try {
+      // Test the new URL first
+      const testService = new BackendService(newUrl);
+      const isHealthy = await testService.healthCheck();
+      
+      if (!isHealthy) {
+        throw new Error('Backend health check failed');
+      }
+
+      // Update the URL
+      this.currentApiUrl = newUrl;
+      localStorage.setItem('dev_backend_url', newUrl);
+      
+      // Recreate the backend service with new URL
+      this.backendService = new BackendService(this.currentApiUrl);
+      this.service = this.backendService;
+      
+      // Update connection status
+      this.backendConnected = true;
+      
+      console.log(`🌐 Backend URL updated to: ${this.currentApiUrl}`);
+      return true;
+    } catch (error) {
+      console.error('Failed to update backend URL:', error);
+      return false;
+    }
+  }
+
+  // Method to reset backend URL to default
+  resetBackendUrl(): void {
+    if (!isDevelopment) {
+      console.warn('Backend URL can only be reset in development mode');
+      return;
+    }
+
+    localStorage.removeItem('dev_backend_url');
+    this.currentApiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    
+    if (this.serviceType === 'backend') {
+      this.backendService = new BackendService(this.currentApiUrl);
+      this.service = this.backendService;
+      this.checkBackendHealth();
+    }
+    
+    console.log(`🌐 Backend URL reset to: ${this.currentApiUrl}`);
   }
 
   // Direct delegation to the configured service (no fallback)
@@ -97,14 +171,18 @@ class ApiService implements ServiceInterface {
     baseUrl?: string;
     connected: boolean;
     displayName: string;
+    environment: string;
+    canChangeUrl: boolean;
   } {
     return {
       type: this.serviceType,
-      baseUrl: this.serviceType === 'backend' ? API_BASE_URL : undefined,
+      baseUrl: this.serviceType === 'backend' ? this.currentApiUrl : undefined,
       connected: this.serviceType === 'backend' ? this.backendConnected : true,
       displayName: this.serviceType === 'backend' 
         ? 'Backend API'
-        : 'Memory Service'
+        : 'Memory Service',
+      environment: isProduction ? 'production' : 'development',
+      canChangeUrl: isDevelopment && this.serviceType === 'backend'
     };
   }
 
