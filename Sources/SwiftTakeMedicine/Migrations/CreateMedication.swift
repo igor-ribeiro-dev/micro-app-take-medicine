@@ -1,7 +1,7 @@
 import Fluent
 
 struct CreateMedication: Migration {
-    func prepare(on database: Database) -> EventLoopFuture<Void> {
+    func prepare(on database: any Database) -> EventLoopFuture<Void> {
         database.schema("medications")
             .id()
             .field("name", .string, .required)
@@ -12,7 +12,7 @@ struct CreateMedication: Migration {
             .create()
     }
 
-    func revert(on database: Database) -> EventLoopFuture<Void> {
+    func revert(on database: any Database) -> EventLoopFuture<Void> {
         database.schema("medications").delete()
     }
 } 

@@ -2,7 +2,7 @@ import Vapor
 import Fluent
 
 struct SystemConfigController: RouteCollection {
-    func boot(routes: RoutesBuilder) throws {
+    func boot(routes: any RoutesBuilder) throws {
         let config = routes.grouped("config")
         config.get(use: getConfig)
         config.put(use: updateConfig)

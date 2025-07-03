@@ -9,7 +9,7 @@ public func configure(_ app: Application) async throws {
     // Habilita servir arquivos estáticos do frontend React
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
-    app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db.sqlite")), as: .sqlite)
+    app.databases.use(DatabaseConfigurationFactory.sqlite(.file("db/db.sqlite")), as: .sqlite)
 
     app.migrations.add(CreateTodo())
     app.migrations.add(CreateMedication())

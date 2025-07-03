@@ -13,4 +13,5 @@ export default defineConfig({
       '/config': 'http://localhost:8080',
     },
   },
+  base: '/micro-app-take-medicine/',
 });

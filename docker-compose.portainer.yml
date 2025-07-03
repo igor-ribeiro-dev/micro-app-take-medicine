@@ -1,0 +1,14 @@
+services:
+  app:
+    image: igorthefox/swift-take-medicine:latest
+    ports:
+      - '8100:8080'
+    environment:
+      LOG_LEVEL: info
+    volumes:
+      - db_data:/app/db
+    command: ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8080"]
+    restart: unless-stopped
+
+volumes:
+  db_data: 

@@ -2,7 +2,7 @@ import Vapor
 import Fluent
 
 struct MedicationController: RouteCollection {
-    func boot(routes: RoutesBuilder) throws {
+    func boot(routes: any RoutesBuilder) throws {
         let medications = routes.grouped("medications")
         medications.post(use: create)
         medications.get(use: getAll)
