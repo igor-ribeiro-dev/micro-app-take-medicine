@@ -3,11 +3,15 @@ import Vapor
 
 func routes(_ app: Application) throws {
     app.get { req async throws in
-        try await req.view.render("index", ["title": "Hello Vapor!"])
+        return req.fileio.streamFile(at: app.directory.publicDirectory + "index.html")
     }
 
     app.get("hello") { req async -> String in
         "Hello, world!"
+    }
+
+    app.get("health") { req async -> [String: String] in
+        ["status": "ok"]
     }
 
     try app.register(collection: TodoController())
