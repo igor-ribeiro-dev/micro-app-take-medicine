@@ -69,6 +69,8 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
 # Create a vapor user and group with /app as its home directory
 RUN useradd --user-group --create-home --system --skel /dev/null --home-dir /app vapor
 
+RUN mkdir -p /app/db && chown -R vapor:vapor /app/db
+
 # Switch to the new home directory
 WORKDIR /app
 
