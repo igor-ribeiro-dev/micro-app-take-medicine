@@ -64,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Pill className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">SwiftTakeMedicine</h1>
+              <h1 className="text-xl font-bold text-gray-900">Medicamentos</h1>
               <div className="flex items-center space-x-2">
                 <p className="text-sm text-gray-500">Gestão Simplificada de Medicamentos</p>
                 <div className="flex items-center space-x-1">
