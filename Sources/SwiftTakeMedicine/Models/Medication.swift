@@ -34,13 +34,4 @@ final class Medication: Model, Content, @unchecked Sendable {
         self.time = time
         self.userId = userId
     }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decodeIfPresent(UUID.self, forKey: .id)
-        self.name = try container.decode(String.self, forKey: .name)
-        self.dosage = try container.decode(String.self, forKey: .dosage)
-        self.time = try container.decode(String.self, forKey: .time)
-        self.userId = try container.decodeIfPresent(String.self, forKey: .userId) ?? ""
-    }
 } 
