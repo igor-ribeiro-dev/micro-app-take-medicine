@@ -51,11 +51,11 @@ final class MedicationNotificationService: @unchecked Sendable {
                     let client = self.app.client
                     let futures = medications.map { medication in
                         client.post(URI(string: url)) { req in
-                            try req.content.encode(["id": medication.id?.uuidString ?? "", "name": medication.name, "dosage": medication.dosage, "time": medication.time])
+                            try req.content.encode(["id": medication.id?.uuidString ?? "", "name": medication.name, "dosage": medication.dosage, "time": medication.time, "userId": medication.userId])
                         }.map { response in
-                            self.app.logger.info("Notificação enviada para medicamento \(medication.name) - status: \(response.status)")
+                            self.app.logger.info("Notificação enviada para medicamento \(medication.name) (userId: \(medication.userId)) - status: \(response.status)")
                         }.flatMapError { error in
-                            self.app.logger.error("Erro ao notificar medicamento \(medication.name): \(error.localizedDescription)")
+                            self.app.logger.error("Erro ao notificar medicamento \(medication.name) (userId: \(medication.userId)): \(error.localizedDescription)")
                             return self.app.eventLoopGroup.next().makeSucceededFuture(())
                         }
                     }

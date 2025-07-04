@@ -7,6 +7,7 @@ struct CreateMedication: Migration {
             .field("name", .string, .required)
             .field("dosage", .string, .required)
             .field("time", .string, .required)
+            .field("user_id", .string, .required)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
             .create()

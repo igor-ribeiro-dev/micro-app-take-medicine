@@ -16,6 +16,9 @@ final class Medication: Model, Content, @unchecked Sendable {
     @Field(key: "time")
     var time: String // Pode ser ajustado para array ou outro tipo depois
     
+    @Field(key: "user_id")
+    var userId: String
+    
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -24,10 +27,20 @@ final class Medication: Model, Content, @unchecked Sendable {
     
     init() {}
     
-    init(id: UUID? = nil, name: String, dosage: String, time: String) {
+    init(id: UUID? = nil, name: String, dosage: String, time: String, userId: String) {
         self.id = id
         self.name = name
         self.dosage = dosage
         self.time = time
+        self.userId = userId
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(UUID.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.dosage = try container.decode(String.self, forKey: .dosage)
+        self.time = try container.decode(String.self, forKey: .time)
+        self.userId = try container.decodeIfPresent(String.self, forKey: .userId) ?? ""
     }
 } 
